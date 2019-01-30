@@ -41,7 +41,7 @@ export default class PrismicLoader {
     console.log(`Prismic: ${totalDocuments} documents exist across ${totalPages} pages of size ${options.pageSize}`)
 
     // check the total number of pages
-    if (totalPages === 1) {
+    if (!totalPages || totalPages === 1) {
       return Promise.resolve([documents])
     }
 
