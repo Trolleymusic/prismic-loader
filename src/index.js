@@ -1,26 +1,21 @@
 import Prismic from 'prismic-javascript'
 
+const defaultLinkResolver = () => '/'
+
 export default class PrismicLoader {
-  constructor (config) {
-    this.config = config
+  constructor ({ accessToken, apiEndpoint, linkResolver = defaultLinkResolver, logger = console }) {
+    this.config = { accessToken, apiEndpoint, linkResolver, logger }
   }
 
   connect () {
-    const accessToken = this.config.accessToken
-    return new Promise((resolve, reject) => {
-      return Prismic.api(this.config.apiEndpoint, { accessToken })
-        .then(api => {
-          const linkResolver = this.config.linkResolver ? this.config.linkResolver : () => '/'
-          this.prismic = {
-            api,
-            endpoint: this.config.apiEndpoint,
-            accessToken,
-            linkResolver
-          }
+    const { accessToken, apiEndpoint, linkResolver } = this.config
+    return Prismic.api(apiEndpoint, { accessToken })
+      .then(api => this.setPrismic({ api, endpoint: apiEndpoint, accessToken, linkResolver }))
+  }
 
-          return resolve(this.prismic)
-        })
-    })
+  setPrismic ({ api, endpoint, accessToken, linkResolver }) {
+    this.prismic = { api, endpoint, accessToken, linkResolver }
+    return this.prismic
   }
 
   fetchAll () {
@@ -50,7 +45,7 @@ export default class PrismicLoader {
   }
 
   fetchAllPage (query, options, page) {
-    const pageOptions = Object.assign({}, options, {page})
+    const pageOptions = Object.assign({}, options, { page })
     return this.prismic.api.query(query, pageOptions)
       .catch(error => console.error(error))
   }
