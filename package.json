@@ -5,8 +5,9 @@
   "main": "lib/index.js",
   "files": [],
   "scripts": {
+    "documentation": "jsdoc2md ./src/*.js > README.md",
     "prepare": "node_modules/@babel/cli/bin/babel.js src --out-dir lib --ignore **/__tests__",
-    "test": "standard --fix"
+    "lint": "standard --fix"
   },
   "repository": {
     "type": "git",
@@ -19,13 +20,14 @@
   },
   "homepage": "https://github.com/Trolleymusic/prismic-loader#readme",
   "dependencies": {
-    "prismic-javascript": "^1.5.1"
+    "prismic-javascript": "^2.7.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.9.0",
     "@babel/preset-env": "^7.9.0",
     "@babel/register": "^7.9.0",
+    "jsdoc-to-markdown": "^6.0.1",
     "standard": "^14.3.3"
   },
   "babel": {

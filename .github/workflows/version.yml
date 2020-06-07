@@ -1,0 +1,58 @@
+name: Version
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  bump_version:
+    name: Bump version
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - uses: actions/checkout@master
+    - name: Setup
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12
+        registry-url: https://registry.npmjs.org/
+    - name: Configure Git
+      id: config
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "$GITHUB_ACTOR"
+        echo ::set-output name=commit_message::github.event.head_commit.message
+    - name: Set increment patch
+      if: contains(github.event.head_commit.message, 'patch')
+      run: npm version patch
+    - name: Set increment minor
+      if: contains(github.event.head_commit.message, 'minor')
+      run: npm version minor
+    - name: Set increment major
+      if: contains(github.event.head_commit.message, 'major')
+      run: npm version major
+    - name: Commit and push
+      id: commit_push
+      continue-on-error: false
+      # Unsure if this conditional is necessary
+      if: contains(github.event.head_commit.message, 'patch') || contains(github.event.head_commit.message, 'minor') || contains(github.event.head_commit.message, 'major')
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        API_TOKEN: ${{ secrets.API_TOKEN }}
+      run: |
+        git push "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git" HEAD:$GITHUB_REF --follow-tags
+        export LATEST_TAG=$(git tag | grep -E '^v[0-9]' | sort -V | tail -1)
+        echo ::set-output name=latest_tag::$LATEST_TAG
+    - name: Create releases
+      uses: octokit/request-action@v2.x
+      with:
+        route: POST /repos/:repository/releases
+        repository: ${{ github.repository }}
+        tag_name: ${{ steps.commit_push.outputs.latest_tag }}
+        name: ${{ steps.commit_push.outputs.latest_tag }}
+        body: ${{ steps.commit_push.config.commit_message }}
+        draft: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.API_TOKEN }}
