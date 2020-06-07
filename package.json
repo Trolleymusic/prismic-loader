@@ -1,6 +1,6 @@
 {
   "name": "prismic-loader",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "Module for loading Prismic pages",
   "main": "lib/index.js",
   "files": [],
