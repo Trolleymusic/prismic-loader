@@ -3,24 +3,44 @@
   "version": "0.0.3",
   "description": "Module for loading Prismic pages",
   "main": "lib/index.js",
+  "files": [],
   "scripts": {
-    "prepublish": "node_modules/babel-cli/bin/babel.js src --out-dir lib",
-    "test": "standard"
+    "documentation": "jsdoc2md ./src/*.js > README.md",
+    "prepare": "node_modules/@babel/cli/bin/babel.js src --out-dir lib --ignore **/__tests__",
+    "lint": "standard --fix"
   },
-  "babel": {
-    "presets": [
-      "es2015"
-    ]
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Trolleymusic/prismic-loader.git"
   },
   "author": "Wayne Durack <@trolleymusic>",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Trolleymusic/prismic-loader/issues"
+  },
+  "homepage": "https://github.com/Trolleymusic/prismic-loader#readme",
   "dependencies": {
-    "prismic-javascript": "^1.5.0"
+    "prismic-javascript": "^2.7.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
-    "babel-preset-es2015": "^6.24.1",
-    "standard": "^11.0.1"
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "@babel/register": "^7.9.0",
+    "jsdoc-to-markdown": "^6.0.1",
+    "standard": "^14.3.3"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ]
+    ],
+    "sourceMaps": "inline"
   }
 }
